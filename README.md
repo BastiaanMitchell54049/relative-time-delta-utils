@@ -31,3 +31,10 @@ The deliberate trade-off is scope: only four phrase shapes are supported (ordina
 - **Fifth weekday of a month**: `fifth Monday of March` raises `RelativeTimeError` when applied to a year/month where that occurrence does not exist. Constructing the `RelativeTimeDelta` succeeds; the failure surfaces at `apply` time because existence depends on the reference year.
 - **'last' vs 'next' on the same weekday**: `last Monday` applied on a Monday returns the previous week's Monday (7 days back), not today. `next Monday` on a Monday returns next week. This is intentional — strict past/future semantics.
 - **Time and timezone**: `apply` preserves the time-of-day and timezone of the base datetime; only the calendar date changes.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
